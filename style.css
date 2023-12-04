@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: white;
+  background: #0f0c29; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #24243e,
+    #302b63,
+    #0f0c29
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #24243e,
+    #302b63,
+    #0f0c29
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  height: 100vh;
+  width: auto;
+  font-family: sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+}
+#todotext {
+  box-shadow: rgba(253, 253, 254, 0.1) 0px 8px 18px,
+    rgba(243, 243, 244, 0.1) 0px 16px 56px, rgba(247, 247, 248, 0.1) 0px 24px 80px;
+}
+#section-1 input {
+  box-shadow: rgba(251, 251, 251, 0.1) 0px 4px 18px,
+    rgba(250, 250, 251, 0.1) 0px 16px 56px, rgba(249, 249, 250, 0.1) 0px 24px 80px;
+}
+#section-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#section-1 label {
+  font-size: 22px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+#section-1 input[type="text"] {
+  height: 40px;
+  width: 100%;
+  max-width: 400px;
+  min-width: 200px;
+  font-size: 16px;
+  padding-left: 10px;
+}
+#section-1 #updateBtn {
+  display: none;
+}
+#section-1 input[type="button"] {
+  margin-left: 10px;
+  min-height: 40px;
+}
+
+#bool {
+  margin-left: 10px;
+
+  display: none;
+}
+
+#section-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+table {
+  margin-top: 100px;
+  width: 100%;
+}
+thead {
+  width: 100%;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.task span {
+  position: absolute;
+  right: 0;
+}
+#cancelBtn {
+  display: none;
+}

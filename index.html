@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo Home</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </head>
+
+    <body onload="getData()">
+        <header>
+            <h1>Todo App</h1>
+        </header>
+
+        <main>
+            <form>
+                <section id="section-1">
+                    <label for="todotext">TASK:</label>
+                    <input type="text" name="desciption" id="todotext"
+                        placeholder="Enter your todo description..">
+                    <input type="button" value="ADD" id="addBtn">
+                    <input type="button" value="UPDATE" id="updateBtn">
+                    <input type="button" value="CANCEL" id="cancelBtn">
+
+                </section>
+                <section id="section-2">
+                    <label for="dateInput"
+                        onclick=" document.getElementById('calendarInput').click();">Date:</label>
+                    <input type="date" name="date" id="dateInput"
+                        title="select the date">
+                    <span id="bool">
+                        <input type="checkbox" name="bool" id="boolVal">
+                        <label for="bool">Completed</label>
+                    </span>
+
+                </section>
+
+            </form>
+
+            <table border="1" style="border-collapse:separate;">
+                <thead>
+                    <tr style="width: 100%;">
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 10%;">Done/not</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 60%;">Task</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                </tbody>
+            </table>
+
+        </main>
+
+        <script>
+
+        const text = document.getElementById('todotext');
+        const add = document.getElementById('addBtn');
+        const dateInput = document.getElementById("dateInput");
+        const form = document.querySelector("form");
+        const tbody = document.querySelector('tbody');
+        const update = document.getElementById("updateBtn");
+        const cancel = document.getElementById('cancelBtn');
+        const bool = document.getElementById("bool");
+        const boolVal = document.getElementById("boolVal");
+
+
+        let api = "https://script.google.com/macros/s/AKfycbxjad1DAbQTORCv4BJgEq53ZMU3ZkL-fFAZ6-quyzGmns9-wzoE_aNDzNTcLqCl-ETb/exec";
+
+
+        add.addEventListener("click", () => {
+
+            if (text.value === "" || dateInput.value === "") {
+                alert("Inputs are empty !");
+            }
+            else {
+                add.value = "Loading...";
+
+                const data = {
+                    txt: text.value,
+                    date: dateInput.value,
+                    bool: boolVal.checked
+                }
+
+                fetch(api, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+
+
+                }).then(value => value.text())
+                    .then(txt => {
+                        getData();
+                        alert(txt);
+
+                        add.value = "ADD";
+                        form.reset();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Task adding failed!")
+                    })
+
+            }
+
+        })
+
+
+        function getData() {
+
+            add.value = "Loading.."
+            fetch(api).then(res => res.json())
+                .then(res => {
+                    const out = res.map(el => {
+                        return `<tr>
+                                <td class="id">${el[0]}</td>
+                                <td class="bool">${el[1]}</td>
+                                <td class="date">${el[2].slice(0, 10)}</td>
+                                <td class="task">${el[3]} <span> <input type="button" value="update" onclick="updateElem(this.parentElement,${el[0]})"> <input type="button" value="delete" onclick="delElem(${el[0]})"></span> </td>
+                              </tr>   
+                                `;
+
+
+                    })
+
+                    tbody.innerHTML = out.join('');
+
+                    add.value = "ADD";
+
+
+
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        }
+
+
+
+
+        function delElem(id) {
+            add.value = "Deleting..";
+            fetch(api + `?del=true&id=${id}`)
+                .then(res => res.text()).then(res => {
+                    getData();
+                    add.value = "ADD";
+                    alert(res);
+                }).catch(err => {
+                    console.error(err);
+                })
+
+
+
+
+
+        }
+
+
+        function updateElem(el, id) {
+            add.style.display = "none";
+            update.style.display = "unset";
+            cancel.style.display = "unset";
+            bool.style.display = "flex";
+
+
+            cancel.addEventListener("click", () => {
+                add.style.display = "unset";
+                update.style.display = "none";
+                cancel.style.display = "none";
+                bool.style.display = "none";
+                form.reset();
+            })
+
+
+
+            let task = el.parentElement.textContent;
+            let dateData = el.parentElement.parentElement.querySelector(".date").textContent;
+            let boolState = el.parentElement.parentElement.querySelector(".bool").textContent;
+
+            text.value = task;
+            dateInput.value = dateData;
+            if (boolState == "true") {
+                boolState = true;
+            }
+            else {
+                boolState = false;
+            }
+            boolVal.checked = boolState;
+
+
+            update.onclick = updateContent;
+
+            function updateContent() {
+
+                update.value = "Updating.."
+
+
+                const data = {
+                    txt: text.value,
+                    ID: id,
+                    date: dateInput.value,
+                    bool: boolVal.checked
+                }
+
+                if (boolVal.checked === true) {
+                    delElem(id);
+                }
+
+
+
+                fetch(api, {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                }).then(res => res.text())
+                    .then(res => {
+                        getData();
+                        alert(res);
+                        update.value = "UPDATE"
+                        form.reset();
+
+
+                        add.style.display = "unset";
+                        update.style.display = "none";
+                        cancel.style.display = "none";
+                        bool.style.display = "none"
+
+
+                    }).catch(err => {
+                        console.error(err);
+                    })
+
+
+
+            }
+
+
+        }
+
+
+
+
+    </script>
+
+    </body>
+
+</html>
